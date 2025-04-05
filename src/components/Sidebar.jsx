@@ -4,6 +4,7 @@ function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
   const [newWalletAddress, setNewWalletAddress] = useState('');
   const [showInflow, setShowInflow] = useState(false);
   const [showOutflow, setShowOutflow] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true); // NEW
 
   const handleAddWallet = () => {
     if (newWalletAddress.trim()) {
@@ -98,40 +99,58 @@ function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
   };
 
   return (
-    <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
-      <div className="sidebar-section">
-        <h2>Add Wallet</h2>
-        <div className="add-wallet-form">
-          <input
-            type="text"
-            placeholder="Enter wallet address"
-            value={newWalletAddress}
-            onChange={(e) => setNewWalletAddress(e.target.value)}
-            className="wallet-input"
-          />
-          <button className="add-wallet-btn" onClick={handleAddWallet}>
-            Add
-          </button>
-        </div>
-      </div>
-
-      {selectedNode && (
-        <div className="sidebar-section">
-          {renderConnectionDetails()}
-
-          <div className="toggle-section">
-            <button onClick={() => setShowInflow(!showInflow)}>
-              {showInflow ? 'Hide Inflow' : 'Show Inflow'}
-            </button>
-            <button onClick={() => setShowOutflow(!showOutflow)}>
-              {showOutflow ? 'Hide Outflow' : 'Show Outflow'}
-            </button>
+    <div
+      className={`sidebar-container ${isDarkMode ? 'dark' : ''}`}
+      style={{ display: 'flex' }}
+    >
+      {/* Sidebar Panel */}
+      {showSidebar && (
+        <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
+          <div className="sidebar-section">
+            <h2>Add Wallet</h2>
+            <div className="add-wallet-form">
+              <input
+                type="text"
+                placeholder="Enter wallet address"
+                value={newWalletAddress}
+                onChange={(e) => setNewWalletAddress(e.target.value)}
+                className="wallet-input"
+              />
+              <button className="add-wallet-btn" onClick={handleAddWallet}>
+                Add
+              </button>
+            </div>
           </div>
 
-          {showInflow && renderInflowDetails()}
-          {showOutflow && renderOutflowDetails()}
+          {selectedNode && (
+            <div className="sidebar-section">
+              {renderConnectionDetails()}
+
+              <div className="toggle-section">
+                <button onClick={() => setShowInflow(!showInflow)}>
+                  {showInflow ? 'Hide Inflow' : 'Show Inflow'}
+                </button>
+                <button onClick={() => setShowOutflow(!showOutflow)}>
+                  {showOutflow ? 'Hide Outflow' : 'Show Outflow'}
+                </button>
+              </div>
+
+              {showInflow && renderInflowDetails()}
+              {showOutflow && renderOutflowDetails()}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Arrow Toggle Button */}
+      <div className="toggle-arrow-wrapper">
+        <button
+          className="toggle-arrow-btn"
+          onClick={() => setShowSidebar((prev) => !prev)}
+        >
+          {showSidebar ? '❮' : '❯'}
+        </button>
+      </div>
     </div>
   );
 }

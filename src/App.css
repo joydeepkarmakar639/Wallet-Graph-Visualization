@@ -330,3 +330,28 @@ input:checked + .slider::before {
 .toggle-section button:hover {
   background-color: #555;
 }
+
+.sidebar-container {
+  position: relative;
+}
+
+.sidebar {
+  width: 300px;
+  padding: 16px;
+  border-right: 1px solid #ccc;
+  transition: all 0.3s ease;
+}
+
+.toggle-arrow-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.toggle-arrow-btn {
+  background-color: #eee;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
