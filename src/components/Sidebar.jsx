@@ -1,4 +1,4 @@
-// src/components/Sidebar.js
+
 import React, { useState } from 'react';
 
 function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
