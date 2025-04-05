@@ -17,7 +17,6 @@ function CustomEdge({
   targetPosition,
   data,
   style = {},
-  markerEnd,
 }) {
   const edgeData = data || {};
   const { balance, date, time, isOutflow } = edgeData;
@@ -33,34 +32,65 @@ function CustomEdge({
 
   const angle = getAngleAtMidpoint(sourceX, sourceY, targetX, targetY);
 
-  // Basic padding settings
-  const horizontalPadding = 8;
-  const verticalPadding = 6;
-  const labelWidth = 120;
-  const labelHeight = date && time ? 40 : 20;
-
+  const edgeColor = isOutflow ? '#d14f69' : '#1a73e8';
   const edgeStyle = {
     ...style,
     strokeWidth: isOutflow ? 3 : 1.5,
-    stroke: isOutflow ? '#d14f69' : '#1a73e8',
+    stroke: edgeColor,
   };
+
+  const markerId = isOutflow ? 'arrow-outflow' : 'arrow-inflow';
+
+  // Adjust label size if date/time is present
+  const labelWidth = 130;
+  const labelHeight = date && time ? 54 : 36;
 
   return (
     <>
+      {/* Define Arrow Markers */}
+      <defs>
+        <marker
+          id="arrow-inflow"
+          markerWidth="8"
+          markerHeight="8"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1a73e8" />
+        </marker>
+
+        <marker
+          id="arrow-outflow"
+          markerWidth="8"
+          markerHeight="8"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 Z" fill="#d14f69" />
+        </marker>
+      </defs>
+
+      {/* Edge path with marker */}
       <path
         id={id}
         style={edgeStyle}
         className="react-flow__edge-path"
         d={edgePath}
-        markerEnd={markerEnd}
+        markerEnd={`url(#${markerId})`}
       />
 
+      {/* Label box */}
       {balance && (
         <g
           transform={`translate(${labelX}, ${labelY}) rotate(${angle})`}
           pointerEvents="none"
         >
-          {/* Label background */}
           <rect
             x={-labelWidth / 2}
             y={-labelHeight / 2}
@@ -68,14 +98,13 @@ function CustomEdge({
             height={labelHeight}
             rx={6}
             ry={6}
-            fill={isOutflow ? '#d14f69' : '#1a73e8'}
+            fill={edgeColor}
             fillOpacity="0.85"
           />
 
-          {/* Balance line */}
           <text
             x={0}
-            y={-2}
+            y={-6}
             textAnchor="middle"
             fontSize={11}
             fontWeight="bold"
@@ -84,11 +113,10 @@ function CustomEdge({
             {balance}
           </text>
 
-          {/* Date + time line */}
           {date && time && (
             <text
               x={0}
-              y={12}
+              y={8}
               textAnchor="middle"
               fontSize={9}
               fill="white"
@@ -97,6 +125,19 @@ function CustomEdge({
               {date} • {time}
             </text>
           )}
+
+          {/* Direction label */}
+          <text
+            x={0}
+            y={date && time ? 22 : 8}
+            textAnchor="middle"
+            fontSize={9}
+            fill="white"
+            fontStyle="italic"
+            opacity={0.9}
+          >
+            {isOutflow ? 'Outflow' : 'Inflow'}
+          </text>
         </g>
       )}
     </>
