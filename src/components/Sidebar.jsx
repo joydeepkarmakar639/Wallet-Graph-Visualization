@@ -1,8 +1,9 @@
-
 import React, { useState } from 'react';
 
 function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
   const [newWalletAddress, setNewWalletAddress] = useState('');
+  const [showInflow, setShowInflow] = useState(false);
+  const [showOutflow, setShowOutflow] = useState(false);
 
   const handleAddWallet = () => {
     if (newWalletAddress.trim()) {
@@ -48,6 +49,54 @@ function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
     );
   };
 
+  const renderInflowDetails = () => {
+    if (!selectedNode || selectedNode.data.direction !== 'inflow') return null;
+
+    return (
+      <div className="connection-details">
+        <h3>Inflow Transaction</h3>
+        <div className="detail-item">
+          <span className="detail-label">Amount:</span>
+          <span className="detail-value">
+            {selectedNode.data.amount} {selectedNode.data.tokenType}
+          </span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Date:</span>
+          <span className="detail-value">{selectedNode.data.date}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Time:</span>
+          <span className="detail-value">{selectedNode.data.time}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderOutflowDetails = () => {
+    if (!selectedNode || selectedNode.data.direction !== 'outflow') return null;
+
+    return (
+      <div className="connection-details">
+        <h3>Outflow Transaction</h3>
+        <div className="detail-item">
+          <span className="detail-label">Amount:</span>
+          <span className="detail-value">
+            {selectedNode.data.amount} {selectedNode.data.tokenType}
+          </span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Date:</span>
+          <span className="detail-value">{selectedNode.data.date}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Time:</span>
+          <span className="detail-value">{selectedNode.data.time}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
       <div className="sidebar-section">
@@ -67,7 +116,21 @@ function Sidebar({ selectedNode, onAddWallet, isDarkMode }) {
       </div>
 
       {selectedNode && (
-        <div className="sidebar-section">{renderConnectionDetails()}</div>
+        <div className="sidebar-section">
+          {renderConnectionDetails()}
+
+          <div className="toggle-section">
+            <button onClick={() => setShowInflow(!showInflow)}>
+              {showInflow ? 'Hide Inflow' : 'Show Inflow'}
+            </button>
+            <button onClick={() => setShowOutflow(!showOutflow)}>
+              {showOutflow ? 'Hide Outflow' : 'Show Outflow'}
+            </button>
+          </div>
+
+          {showInflow && renderInflowDetails()}
+          {showOutflow && renderOutflowDetails()}
+        </div>
       )}
     </div>
   );

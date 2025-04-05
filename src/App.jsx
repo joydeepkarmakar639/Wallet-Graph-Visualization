@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import ReactFlow, {
   Controls,
@@ -11,6 +10,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import WalletNode from './components/WalletNode';
+import CustomEdge from './components/CustomEdge';
 import Sidebar from './components/Sidebar';
 import { toPng } from 'html-to-image';
 import { saveSvgAsPng } from 'save-svg-as-png';
@@ -20,6 +20,11 @@ import './App.css';
 
 const nodeTypes = {
   wallet: WalletNode,
+};
+
+// Register the custom edge component
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 function App() {
@@ -63,6 +68,17 @@ function App() {
     return { x: 400, y: centerY };
   };
 
+  // Format date and time from timestamp string
+  const formatDateTime = (dateTimeStr) => {
+    if (!dateTimeStr) return { date: '', time: '' };
+
+    const dateObj = new Date(dateTimeStr);
+    const date = dateObj.toISOString().split('T')[0];
+    const time = dateObj.toTimeString().split(' ')[0];
+
+    return { date, time };
+  };
+
   // Initialize graph with search address
   useEffect(() => {
     const searchAddress = 'bc1q6nxdnz58kexp48sm2t3scwqcw9stt7r8s7uuwn';
@@ -78,6 +94,8 @@ function App() {
           tokenType: 'BTC',
           amount: '',
           isMainNode: true,
+          date: formatDateTime(new Date().toISOString()).date,
+          time: formatDateTime(new Date().toISOString()).time,
         },
         position: { x: 400, y: 300 },
       },
@@ -164,6 +182,9 @@ function App() {
     const inflowEdges = [];
 
     inflowData.data.forEach((inflow, index) => {
+      // Process date and time
+      const { date, time } = formatDateTime(inflow.date);
+
       // Check if node already exists
       const existingNodeIndex = nodes.findIndex(
         (n) => n.id === inflow.beneficiary_address
@@ -181,19 +202,26 @@ function App() {
             amount: inflow.amount,
             tokenType: inflow.token_type,
             direction: 'inflow',
+            date: date, // Add date
+            time: time, // Add time
           },
           position: getNodePosition(index, 'inflow', inflowData.data),
         });
       }
 
-      // Create edge
+      // Create edge with custom type and transaction data
       inflowEdges.push({
         id: `e-${inflow.beneficiary_address}-${address}`,
         source: inflow.beneficiary_address,
         target: address,
-        type: 'default',
+        type: 'custom', // Use custom edge type
         animated: true,
-        style: { stroke: '#1a73e8' },
+        data: {
+          balance: `${inflow.amount} ${inflow.token_type}`,
+          date: date,
+          time: time,
+          isOutflow: false,
+        },
       });
     });
 
@@ -202,6 +230,9 @@ function App() {
     const outflowEdges = [];
 
     outflowData.data.forEach((outflow, index) => {
+      // Process date and time
+      const { date, time } = formatDateTime(outflow.date);
+
       // Check if node already exists
       const existingNodeIndex = nodes.findIndex(
         (n) => n.id === outflow.payer_address
@@ -219,19 +250,26 @@ function App() {
             amount: outflow.amount,
             tokenType: outflow.token_type,
             direction: 'outflow',
+            date: date, // Add date
+            time: time, // Add time
           },
           position: getNodePosition(index, 'outflow', outflowData.data),
         });
       }
 
-      // Create edge
+      // Create edge with custom type and transaction data
       outflowEdges.push({
         id: `e-${address}-${outflow.payer_address}`,
         source: address,
         target: outflow.payer_address,
-        type: 'default',
+        type: 'custom', // Use custom edge type
         animated: true,
-        style: { stroke: '#d14f69' },
+        data: {
+          balance: `${outflow.amount} ${outflow.token_type}`,
+          date: date,
+          time: time,
+          isOutflow: true,
+        },
       });
     });
 
@@ -249,7 +287,7 @@ function App() {
   };
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => setEdges((eds) => addEdge({ ...params, type: 'custom' }, eds)),
     [setEdges]
   );
 
@@ -286,6 +324,9 @@ function App() {
       // If exists, just focus on it
       setSelectedNode(existingNode);
     } else {
+      // Get current date and time
+      const { date, time } = formatDateTime(new Date().toISOString());
+
       // Create new node
       const newNode = {
         id: walletAddress,
@@ -297,6 +338,8 @@ function App() {
           tokenType: 'BTC',
           amount: '',
           isNew: true,
+          date: date, // Add date
+          time: time, // Add time
         },
         position: { x: 400, y: 500 },
       };
@@ -309,19 +352,18 @@ function App() {
     }
   };
 
-  const exportAsSVG = () => {
+  const exportAsPNG = () => {
     const flowElement = document.querySelector('.react-flow');
 
     if (flowElement) {
-      const svgElement = flowElement.querySelector('svg');
-
-      if (svgElement) {
-        saveSvgAsPng.saveSvg(svgElement, 'wallet-graph.svg', {
-          scale: 2,
-          encoderOptions: 1,
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
-        });
-      }
+      toPng(flowElement, {
+        backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
+      }).then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'wallet-graph.png';
+        link.href = dataUrl;
+        link.click();
+      });
     }
   };
 
@@ -336,6 +378,7 @@ function App() {
           onConnect={onConnect}
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes} // Add edge types
           fitView
         >
           <Controls />
@@ -343,13 +386,16 @@ function App() {
           <Background variant="dots" gap={12} size={1} />
 
           <Panel position="top-right">
-            <button
-              className="mode-toggle"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-            >
-              {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
-            </button>
-            <button className="export-button" onClick={exportAsSVG}>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={isDarkMode}
+                onChange={() => setIsDarkMode(!isDarkMode)}
+              />
+              <span className="slider round"></span>
+            </label>
+
+            <button className="export-button" onClick={exportAsPNG}>
               Export as SVG
             </button>
           </Panel>

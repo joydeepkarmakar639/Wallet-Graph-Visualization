@@ -200,3 +200,133 @@ body {
 .dark-mode .export-button:hover {
   background-color: #444;
 }
+
+/* Wallet Node Styles */
+.wallet-node {
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid;
+  background: white;
+  min-width: 180px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-node.main-node {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.wallet-address {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.wallet-details {
+  font-size: 12px;
+  color: #666;
+}
+
+.entity-name {
+  margin-bottom: 4px;
+}
+
+.amount {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.transaction-datetime {
+  color: #777;
+  font-size: 11px;
+}
+
+/* Edge Styles */
+.edge-label {
+  text-align: center;
+  color: white;
+}
+
+.edge-balance {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.edge-datetime {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.wallet-details {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.wallet-node:hover .wallet-details {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  margin-right: 12px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider::before {
+  position: absolute;
+  content: '';
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.toggle-section {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.toggle-section button {
+  padding: 6px 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toggle-section button:hover {
+  background-color: #555;
+}
