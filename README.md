@@ -2,7 +2,7 @@
 
 An interactive graph visualization tool that allows users to explore connections between wallet addresses. Each node represents a wallet address and has inflow and outflow connections, with automatic linking when new nodes are added.
 
-![Wallet Graph Visualization]
+[Wallet Graph Visualization]
 
 ## Features
 
@@ -23,6 +23,59 @@ An interactive graph visualization tool that allows users to explore connections
 - **Redux Toolkit**: State management
 - **HTML-to-Image/Save-SVG-as-PNG**: Export functionality
 - **CSS3**: Styling and theme management
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/wallet-graph-visualization.git
+cd wallet-graph-visualization
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
+
+```bash
+npm start
+```
+
+4. Open [http://localhost:5173/] in your browser
+
+## Deployment
+
+### Vercel Deployment
+
+1. Install Vercel CLI:
+
+```bash
+npm install -g vercel
+```
+
+2. Login to Vercel:
+
+```bash
+vercel login
+```
+
+3. Deploy:
+
+```bash
+vercel
+```
+
+4. For production deployment:
+
+```bash
+vercel --prod
+```
+
+## Usage Guide
 
 ### Adding New Wallet Addresses
 
